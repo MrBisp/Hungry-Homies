@@ -144,22 +144,29 @@ const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
         if (!isInitializedRef.current && "geolocation" in navigator) {
             isInitializedRef.current = true;
 
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const newPosition = [position.coords.latitude, position.coords.longitude];
-                    if (isValidLatLng(newPosition)) {
-                        positionRef.current = newPosition;
-                        sessionStorage.setItem('userPosition', JSON.stringify(newPosition));
-                        // Add safety check before setting view
-                        if (map && map.setView && map._loaded) {
-                            map.setView(newPosition, defaultZoom);
+            // Add a small delay to ensure map is ready
+            setTimeout(() => {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const newPosition = [position.coords.latitude, position.coords.longitude];
+                        if (isValidLatLng(newPosition)) {
+                            positionRef.current = newPosition;
+                            sessionStorage.setItem('userPosition', JSON.stringify(newPosition));
+                            // Add additional safety checks
+                            if (map && typeof map.setView === 'function' && map._loaded) {
+                                try {
+                                    map.setView(newPosition, defaultZoom);
+                                } catch (error) {
+                                    console.error('Error setting map view:', error);
+                                }
+                            }
                         }
+                    },
+                    (error) => {
+                        console.error("Error getting location:", error);
                     }
-                },
-                (error) => {
-                    console.error("Error getting location:", error);
-                }
-            );
+                );
+            }, 100); // Small delay to ensure map is initialized
         }
     }, [map, defaultZoom, positionRef]);
 
@@ -186,7 +193,7 @@ const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
 
 const Map = memo(({ onMoveEnd = null, showCenterMarker = false, whenCreated = null, defaultZoom = 15, useRandom = false }) => {
     const positionRef = useRef(getInitialPosition());
-    const { data: status } = useSession();
+    const { status } = useSession();
     const { reviews: friendReviews, isLoading } = useReviews();
 
     const [activeEmoji, setActiveEmoji] = useState(null);
