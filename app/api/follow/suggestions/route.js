@@ -16,6 +16,7 @@ export async function GET() {
         const { data: following } = await supabase
             .from('follows')
             .select('following_id')
+            .eq('use_for_recommendations', true)
             .eq('follower_id', session.user.id);
 
         const followingIds = following?.map(f => f.following_id) || [];
@@ -27,6 +28,7 @@ export async function GET() {
             .from('users')
             .select('id, name, image')
             .not('id', 'in', `(${followingIds.join(',')})`)
+            .eq('use_for_recommendations', true)
             .limit(10);
 
         if (error) throw error;
