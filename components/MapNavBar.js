@@ -34,6 +34,7 @@ const MapNavBar = () => {
                     <ProfileImage
                         user={session.user}
                         size="sm"
+                        key={session.user.image}
                     />
                     <span className="text-xs mt-1">Me</span>
                 </Link>

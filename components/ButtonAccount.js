@@ -45,7 +45,7 @@ const ButtonAccount = () => {
           <Popover.Button className="btn">
             {session?.user?.image ? (
               <img
-                src={session?.user?.image}
+                src={`${session.user.image}?${new Date().getTime()}`}
                 alt={session?.user?.name || "Account"}
                 className="w-6 h-6 rounded-full shrink-0"
                 referrerPolicy="no-referrer"
@@ -68,9 +68,8 @@ const ButtonAccount = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                className={`w-5 h-5 duration-200 opacity-50 ${
-                  open ? "transform rotate-180 " : ""
-                }`}
+                className={`w-5 h-5 duration-200 opacity-50 ${open ? "transform rotate-180 " : ""
+                  }`}
               >
                 <path
                   fillRule="evenodd"

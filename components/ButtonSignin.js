@@ -9,10 +9,19 @@ const ButtonSignin = ({ text = "Get started", extraStyle }) => {
   const { data: session, status } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // If we're on the login page, we don't want to show the modal
+  const openLoginModal = () => {
+    // If we're already on the login page, don't show the modal
+    if (window.location.pathname === '/auth/login') {
+      return;
+    }
+    setIsModalOpen(true);
+  };
+
   // Show welcome message when authenticated
   if (status === "authenticated") {
     return (
-      <span className="text-base-content">
+      <span key={session.user?.image} className="text-base-content">
         Welcome, {session.user?.name || session.user?.email || "User"}
       </span>
     );
@@ -23,7 +32,7 @@ const ButtonSignin = ({ text = "Get started", extraStyle }) => {
     <>
       <button
         className={`btn ${extraStyle ? extraStyle : ""}`}
-        onClick={() => setIsModalOpen(true)}
+        onClick={openLoginModal}
       >
         {text}
       </button>

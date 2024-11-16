@@ -48,6 +48,7 @@ export const authOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          image: user.image,
         };
       }
     }),
@@ -96,7 +97,7 @@ export const authOptions = {
         // Get fresh user data from Supabase
         const { data: userData, error } = await supabase
           .from('users')
-          .select('id, name, email')
+          .select('id, name, email, image')
           .eq('email', session.user.email)
           .single();
 
@@ -105,7 +106,7 @@ export const authOptions = {
           session.user.name = userData.name;
           // Keep the email and image from the OAuth provider if they exist
           session.user.email = session.user.email || userData.email;
-          session.user.image = session.user.image || null;
+          session.user.image = session.user.image || userData.image;
         }
       }
       return session;

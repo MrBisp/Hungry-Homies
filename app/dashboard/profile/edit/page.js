@@ -4,6 +4,8 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import ProfileImage from '@/components/ProfileImage';
+import { updateGlobalTimestamp } from '@/components/ProfileImage';
+import { useRouter } from 'next/navigation';
 
 export default function EditProfilePage() {
     const { data: session, status, update } = useSession();
@@ -14,6 +16,7 @@ export default function EditProfilePage() {
         image: '',
     });
     const [message, setMessage] = useState('');
+    const router = useRouter();
 
     // Initialize form data once session is loaded
     useEffect(() => {
@@ -132,11 +135,6 @@ export default function EditProfilePage() {
         setMessage('');
 
         try {
-            console.log('Submitting form data:', {
-                ...formData,
-                imageLength: formData.image?.length // Don't log entire base64
-            });
-
             const response = await fetch('/api/user/', {
                 method: 'PUT',
                 headers: {
@@ -146,14 +144,23 @@ export default function EditProfilePage() {
             });
 
             const data = await response.json();
-            console.log('Response from update:', data);
 
             if (!response.ok) throw new Error('Failed to update profile');
 
-            // Force a session refresh
-            await update();
+            // Update session with the returned user data from the API
+            await update({
+                ...session,
+                user: {
+                    ...session?.user,
+                    ...data.user // Use the returned user data instead of just formData.image
+                }
+            });
+
+            // Update global timestamp to trigger all ProfileImage components to update
+            updateGlobalTimestamp();
 
             setMessage('Profile updated successfully!');
+            router.refresh();
         } catch (error) {
             console.error('Error updating profile:', error);
             setMessage('Failed to update profile. Please try again.');
