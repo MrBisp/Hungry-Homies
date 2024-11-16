@@ -16,8 +16,6 @@ export async function POST(req) {
 
   const signature = headers().get("stripe-signature");
 
-  let data;
-  let eventType;
   let event;
 
   // verify Stripe event is legit
@@ -27,9 +25,6 @@ export async function POST(req) {
     console.error(`Webhook signature verification failed. ${err.message}`);
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
-
-  data = event.data;
-  eventType = event.type;
 
   try {
     switch (event.type) {

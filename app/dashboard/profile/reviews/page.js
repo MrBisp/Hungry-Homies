@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function ReviewsPage() {
     const { data: session } = useSession();

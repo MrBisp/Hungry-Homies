@@ -16,7 +16,7 @@ export async function POST() {
         const inviteCode = nanoid(10);
 
         // Create the invite record
-        const { data: invite, error } = await supabase
+        const { data: error } = await supabase
             .from('invites')
             .insert({
                 code: inviteCode,

@@ -13,7 +13,7 @@ export async function POST(req) {
         const { recipientId } = await req.json();
 
         // Check if any request exists (regardless of status)
-        const { data: existingRequest, error: checkError } = await supabase
+        const { data: existingRequest } = await supabase
             .from('follow_requests')
             .select()
             .eq('requester_id', session.user.id)

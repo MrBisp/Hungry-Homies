@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from "react-hot-toast";
 
-export default function LoginPage() {
+// Create a client component that uses useSearchParams
+function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const inviteCode = searchParams.get('invite');
@@ -103,7 +104,7 @@ export default function LoginPage() {
 
                     <div className="text-center">
                         <p className="text-sm text-gray-600">
-                            Don't have an account?{' '}
+                            Don&apos;t have an account?{' '}
                             <button
                                 onClick={() => router.push(`/auth/signup${inviteCode ? `?invite=${inviteCode}` : ''}`)}
                                 className="text-indigo-600 hover:underline font-medium"
@@ -115,5 +116,24 @@ export default function LoginPage() {
                 </form>
             </div>
         </div>
+    );
+}
+
+// Main page component with Suspense boundary
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+                <div className="max-w-md w-full space-y-8">
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold text-gray-900">
+                            Loading...
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }

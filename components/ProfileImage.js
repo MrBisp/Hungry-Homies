@@ -1,17 +1,7 @@
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 
 export default function ProfileImage({ user, size = 'md', customStyle = {} }) {
     // Debug logging
-    const debugInfo = {
-        userProvided: !!user,
-        userData: {
-            name: user?.name,
-            image: user?.image,
-            hasValidImage: !!user?.image,
-            imageType: user?.image?.startsWith('data:image') ? 'base64' : 'url'
-        }
-    };
     //console.debug('ProfileImage render:', debugInfo);
 
     // Handle different size classes
@@ -95,7 +85,6 @@ export default function ProfileImage({ user, size = 'md', customStyle = {} }) {
     }
 
     // If no image but has name, show initials
-    console.debug('Rendering initials:', { name: user.name });
     return (
         <div className={`${sizeClasses[size]} bg-gray-100 rounded-full flex items-center justify-center`}>
             <span className="text-gray-600 text-lg">

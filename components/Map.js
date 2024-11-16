@@ -1,7 +1,6 @@
 "use client";
 
 import React, { memo, useEffect, useRef, useState, useCallback, useMemo } from "react";
-import dynamic from 'next/dynamic';
 import { useReviews } from "@/hooks/useReviews";
 import { useSession } from "next-auth/react";
 import ProfileImage from '@/components/ProfileImage';
@@ -130,7 +129,7 @@ const ReviewMarker = React.memo(({ review, status, handleEmojiClick }) => {
 });
 ReviewMarker.displayName = 'ReviewMarker';
 
-const MapEvents = ({ whenCreated, onMoveEnd, useRandom, defaultZoom, positionRef }) => {
+const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
     const map = useMap();
     const isInitializedRef = useRef(false);
 
@@ -185,9 +184,9 @@ const MapEvents = ({ whenCreated, onMoveEnd, useRandom, defaultZoom, positionRef
     return null;
 };
 
-const Map = memo(({ onLocationSelect = null, onMoveEnd = null, showCenterMarker = false, whenCreated = null, defaultZoom = 15, useRandom = false }) => {
+const Map = memo(({ onMoveEnd = null, showCenterMarker = false, whenCreated = null, defaultZoom = 15, useRandom = false }) => {
     const positionRef = useRef(getInitialPosition());
-    const { data: session, status } = useSession();
+    const { data: status } = useSession();
     const { reviews: friendReviews, isLoading } = useReviews();
 
     const [activeEmoji, setActiveEmoji] = useState(null);

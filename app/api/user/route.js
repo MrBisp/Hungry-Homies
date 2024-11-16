@@ -10,7 +10,7 @@ export async function PUT(req) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { name, email, image } = await req.json();
+        const { name, image } = await req.json();
 
         // Don't update email if user is from Google
         const updateData = {

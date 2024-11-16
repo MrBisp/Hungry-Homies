@@ -10,7 +10,7 @@ export async function GET(request, { params }) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { data: follow, error } = await supabase
+        const { data: follow } = await supabase
             .from('follows')
             .select()
             .eq('follower_id', session.user.id)

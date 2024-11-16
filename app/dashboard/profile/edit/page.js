@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import ProfileImage from '@/components/ProfileImage';
-import { updateGlobalTimestamp } from '@/components/ProfileImage';
 import { useRouter } from 'next/navigation';
 
 export default function EditProfilePage() {
@@ -156,9 +155,6 @@ export default function EditProfilePage() {
                 }
             });
 
-            // Update global timestamp to trigger all ProfileImage components to update
-            updateGlobalTimestamp();
-
             setMessage('Profile updated successfully!');
             router.refresh();
         } catch (error) {
@@ -178,10 +174,7 @@ export default function EditProfilePage() {
         }
     };
 
-    // Helper function to check if string is a base64 image
-    const isBase64Image = (str) => {
-        return str?.startsWith('data:image');
-    };
+
 
     // Show loading state while session is being fetched
     if (status === "loading") {

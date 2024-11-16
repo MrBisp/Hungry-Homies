@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo, useRef, useEffect } from 'react';
+import React, { memo, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useCallback } from 'react';
 
