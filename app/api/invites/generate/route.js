@@ -16,7 +16,7 @@ export async function POST() {
         const inviteCode = nanoid(10);
 
         // Create the invite record
-        const { data: error } = await supabase
+        const { data, error } = await supabase
             .from('invites')
             .insert({
                 code: inviteCode,
@@ -27,6 +27,9 @@ export async function POST() {
             .single();
 
         if (error) throw error;
+
+        // Use the successfully returned data
+        if (!data) throw new Error('No data returned from insert');
 
         // Make sure NEXT_PUBLIC_BASE_URL is set in your .env
         if (!process.env.NEXTAUTH_URL) {
