@@ -144,15 +144,29 @@ const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
         if (!isInitializedRef.current && "geolocation" in navigator) {
             isInitializedRef.current = true;
 
-            // Add a small delay to ensure map is ready
+            // Check if we've already asked for permission this session
+            const hasAskedPermission = sessionStorage.getItem('locationPermissionAsked');
+
+            if (hasAskedPermission) {
+                return; // Don't ask again this session
+            }
+
+            // Mark that we've asked for permission
+            sessionStorage.setItem('locationPermissionAsked', 'true');
+
             setTimeout(() => {
+                const options = {
+                    enableHighAccuracy: false, // Set to false to reduce prompts
+                    timeout: 5000,
+                    maximumAge: 300000 // Cache location for 5 minutes
+                };
+
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const newPosition = [position.coords.latitude, position.coords.longitude];
                         if (isValidLatLng(newPosition)) {
                             positionRef.current = newPosition;
                             sessionStorage.setItem('userPosition', JSON.stringify(newPosition));
-                            // Add additional safety checks
                             if (map && typeof map.setView === 'function' && map._loaded) {
                                 try {
                                     map.setView(newPosition, defaultZoom);
@@ -164,9 +178,14 @@ const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
                     },
                     (error) => {
                         console.error("Error getting location:", error);
-                    }
+                        // If permission denied, don't ask again
+                        if (error.code === error.PERMISSION_DENIED) {
+                            sessionStorage.setItem('locationPermissionDenied', 'true');
+                        }
+                    },
+                    options
                 );
-            }, 100); // Small delay to ensure map is initialized
+            }, 100);
         }
     }, [map, defaultZoom, positionRef]);
 
