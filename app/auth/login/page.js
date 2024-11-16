@@ -1,10 +1,15 @@
 'use client';
 
 import { Suspense } from 'react';
+import ButtonSignin from '@/components/ButtonSignin';
 
 function LoginContent() {
-    // Your existing component code here
-    // Move everything from the current LoginPage component here
+    return (
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+            <h1 className="text-2xl font-bold mb-6">Welcome</h1>
+            <ButtonSignin text="Sign in" extraStyle="btn-primary" />
+        </div>
+    );
 }
 
 export default function LoginPage() {
