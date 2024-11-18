@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import Modal from "@/components/Modal";
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from "next/image";
-
+import Link from "next/link";
 const LoginModal = ({ isAutoOpen = false }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -76,9 +76,9 @@ const LoginModal = ({ isAutoOpen = false }) => {
                 <div className="text-center text-xs text-gray-500">
                     <p>
                         By signing up, you agree to our{' '}
-                        <a href="/terms" className="underline hover:text-gray-700">Terms</a>
+                        <Link href="/terms" className="underline hover:text-gray-700">Terms</Link>
                         {' '}and{' '}
-                        <a href="/privacy" className="underline hover:text-gray-700">Privacy Policy</a>
+                        <Link href="/privacy" className="underline hover:text-gray-700">Privacy Policy</Link>
                     </p>
                 </div>
             </div>

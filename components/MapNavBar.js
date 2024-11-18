@@ -14,20 +14,20 @@ const MapNavBar = () => {
     return (
         <div id="bottom-navbar" className="fixed bottom-0 left-0 right-0 bg-base-100 shadow-lg">
             <div className="flex justify-around items-center p-4">
-                <a href="/" className="flex flex-col items-center">
+                <Link href="/" className="flex flex-col items-center">
                     🗺️
                     <span className="text-xs mt-1">Explore</span>
-                </a>
+                </Link>
 
-                <a href="/dashboard/profile/friends" className="flex flex-col items-center">
+                <Link href="/dashboard/profile/friends" className="flex flex-col items-center">
                     👥
                     <span className="text-xs mt-1">Friends</span>
-                </a>
+                </Link>
 
-                <a href="/dashboard/profile/reviews/new" className="flex flex-col items-center">
+                <Link href="/dashboard/profile/reviews/new" className="flex flex-col items-center">
                     📝
                     <span className="text-xs mt-1">Add</span>
-                </a>
+                </Link>
 
                 <Link href="/dashboard/profile" className="flex flex-col items-center">
                     <ProfileImage
