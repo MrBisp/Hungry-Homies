@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import MapInput from '@/components/MapInput';
 import ImageUpload from '@/components/ImageUpload';
+import PreferencesSelect from '@/components/PreferencesSelect';
 
 const locationTypes = ['restaurant', 'bar', 'cafe', 'bakery'];
 const emojis = ['😋', '🤤', '😍', '🤩', '😊', '👍', '👎', '❤️', '🔥', '⭐', '💯', '💸'];
@@ -14,13 +15,15 @@ export default function EditReviewPage({ params }) {
     const router = useRouter();
     const { data: session } = useSession();
     const [isLoading, setIsLoading] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [formData, setFormData] = useState({
         locationName: '',
         locationType: '',
         coordinates: null,
         primaryEmoji: emojis[0],
         reviewText: '',
-        images: []
+        images: [],
+        preferences: []
     });
 
     const [message, setMessage] = useState(null);
@@ -58,11 +61,14 @@ export default function EditReviewPage({ params }) {
                     coordinates,
                     primaryEmoji: data.review.primary_emoji || emojis[0],
                     reviewText: data.review.review_text,
-                    images: data.review.images || []
+                    images: data.review.images || [],
+                    preferences: data.review.preferences || []
                 });
             } catch (error) {
                 console.error('Error fetching review:', error);
                 setMessage('Error loading review');
+            } finally {
+                setIsInitialLoading(false);
             }
         };
 
@@ -85,7 +91,8 @@ export default function EditReviewPage({ params }) {
                 },
                 primary_emoji: formData.primaryEmoji,
                 review_text: formData.reviewText,
-                images: formData.images
+                images: formData.images,
+                preferences: formData.preferences
             };
 
             console.log('Sending review data:', reviewData);
@@ -122,6 +129,14 @@ export default function EditReviewPage({ params }) {
             }
         }));
     }, []);
+
+    if (isInitialLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 pb-16">
@@ -239,6 +254,20 @@ export default function EditReviewPage({ params }) {
                                         images: newImages
                                     }))
                                 }
+                            />
+                        </div>
+
+                        {/* Dietary Preferences */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Dietary & Special Preferences
+                            </label>
+                            <PreferencesSelect
+                                value={formData.preferences || []}
+                                onChange={(newPreferences) => setFormData(prev => ({
+                                    ...prev,
+                                    preferences: newPreferences
+                                }))}
                             />
                         </div>
 

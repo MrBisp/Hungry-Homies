@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import MapInput from '@/components/MapInput';
 import ReactConfetti from 'react-confetti';
 import ImageUpload from '@/components/ImageUpload';
+import PreferencesSelect from '@/components/PreferencesSelect';
 
 const locationTypes = ['restaurant', 'bar', 'cafe', 'bakery'];
 const emojis = ['😋', '🤤', '😍', '🤩', '😊', '👍', '👎', '❤️', '🔥', '⭐', '💯', '💸'];
@@ -20,7 +21,8 @@ export default function NewReviewPage() {
         coordinates: null,
         primaryEmoji: emojis[0],
         reviewText: '',
-        images: []
+        images: [],
+        preferences: []
     });
 
     const [message, setMessage] = useState(null);
@@ -57,7 +59,8 @@ export default function NewReviewPage() {
                 coordinates: formData.coordinates,
                 primary_emoji: formData.primaryEmoji,
                 review_text: formData.reviewText,
-                images: formData.images
+                images: formData.images,
+                preferences: formData.preferences
             };
 
             const response = await fetch('/api/reviews', {
@@ -219,6 +222,20 @@ export default function NewReviewPage() {
                                     images: newImages
                                 }))
                             }
+                        />
+                    </div>
+
+                    {/* Dietary Preferences */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Dietary & Special Preferences
+                        </label>
+                        <PreferencesSelect
+                            value={formData.preferences || []}
+                            onChange={(newPreferences) => setFormData(prev => ({
+                                ...prev,
+                                preferences: newPreferences
+                            }))}
                         />
                     </div>
 

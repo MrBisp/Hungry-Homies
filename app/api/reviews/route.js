@@ -40,6 +40,20 @@ export async function POST(req) {
 
         if (error) throw error;
 
+        if (body.preferences?.length > 0) {
+            const { error: prefError } = await supabase
+                .from('review_preferences')
+                .insert(
+                    body.preferences.map(p => ({
+                        review_id: review.id,
+                        preference_id: p.preference_id,
+                        is_available: true
+                    }))
+                );
+
+            if (prefError) throw prefError;
+        }
+
         return NextResponse.json({
             success: true,
             review

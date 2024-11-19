@@ -22,7 +22,17 @@ export async function GET(request, { params }) {
                 images,
                 user_id,
                 created_at,
-                updated_at
+                updated_at,
+                review_preferences (
+                    preference_id,
+                    is_available,
+                    notes,
+                    preferences (
+                        name,
+                        description,
+                        icon
+                    )
+                )
             `)
             .eq('id', params.id)
             .single();
@@ -34,11 +44,19 @@ export async function GET(request, { params }) {
             .split(',')
             .map(parseFloat);
 
+        const preferences = review.review_preferences?.filter(rp => rp.is_available).map(rp => ({
+            preference_id: rp.preference_id,
+            name: rp.preferences.name,
+            description: rp.preferences.description,
+            icon: rp.preferences.icon
+        })) || [];
+
         return NextResponse.json({
             success: true,
             review: {
                 ...review,
-                coordinates: { lat, lng }
+                coordinates: { lat, lng },
+                preferences
             }
         });
 
@@ -96,6 +114,28 @@ export async function PUT(request, { params }) {
 
         if (updateError) throw updateError;
 
+        const { error: deletePrefsError } = await supabase
+            .from('review_preferences')
+            .delete()
+            .eq('review_id', reviewId);
+
+        if (deletePrefsError) throw deletePrefsError;
+
+        if (body.preferences?.length > 0) {
+            const { error: insertPrefsError } = await supabase
+                .from('review_preferences')
+                .insert(
+                    body.preferences.map(p => ({
+                        review_id: reviewId,
+                        preference_id: p.preference_id,
+                        is_available: true,
+                        notes: p.notes
+                    }))
+                );
+
+            if (insertPrefsError) throw insertPrefsError;
+        }
+
         const [lng, lat] = updatedReview.coordinates
             .replace(/[()]/g, '')
             .split(',')
@@ -105,7 +145,8 @@ export async function PUT(request, { params }) {
             success: true,
             review: {
                 ...updatedReview,
-                coordinates: { lat, lng }
+                coordinates: { lat, lng },
+                preferences: body.preferences
             }
         });
 

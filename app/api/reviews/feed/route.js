@@ -25,7 +25,7 @@ export async function GET() {
             ...(friendships?.map(f => f.following_id) || [])
         ].filter(Boolean);
 
-        // Fetch only needed fields from reviews
+        // Updated select to use is_available instead of rating
         const { data: reviews, error: reviewError } = await supabase
             .from('reviews')
             .select(`
@@ -37,7 +37,17 @@ export async function GET() {
                 primary_emoji,
                 review_text,
                 images,
-                user:users(id, name, image)
+                user:users(id, name, image),
+                review_preferences (
+                    preference_id,
+                    is_available,
+                    notes,
+                    preferences (
+                        name,
+                        description,
+                        icon
+                    )
+                )
             `)
             .in('user_id', friendIds)
             .order('created_at', { ascending: false })
@@ -45,7 +55,18 @@ export async function GET() {
 
         if (reviewError) throw reviewError;
 
-        return new Response(JSON.stringify(reviews), {
+        // Updated formatting to use is_available
+        const formattedReviews = reviews.map(review => ({
+            ...review,
+            preferences: review.review_preferences?.filter(rp => rp.is_available).map(rp => ({
+                preference_id: rp.preference_id,
+                name: rp.preferences.name,
+                description: rp.preferences.description,
+                icon: rp.preferences.icon
+            })) || []
+        }));
+
+        return new Response(JSON.stringify(formattedReviews), {
             headers: { 'Content-Type': 'application/json' },
         });
 
