@@ -2,6 +2,7 @@ import { supabase } from "@/libs/supabase";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/libs/next-auth";
 import { NextResponse } from "next/server";
+import { createNotification } from "@/libs/notifications";
 
 export async function POST(req) {
     try {
@@ -55,6 +56,14 @@ export async function POST(req) {
             });
 
         if (createError) throw createError;
+
+        await createNotification({
+            recipientId,
+            senderId: session.user.id,
+            type: 'FOLLOW_REQUEST',
+            content: `${session.user.name} wants to follow you`,
+            link: '/dashboard/profile/friends'
+        });
 
         return NextResponse.json({ success: true });
 

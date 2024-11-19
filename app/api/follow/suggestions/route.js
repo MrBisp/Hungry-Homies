@@ -16,7 +16,6 @@ export async function GET() {
         const { data: following } = await supabase
             .from('follows')
             .select('following_id')
-            .eq('use_for_recommendations', true)
             .eq('follower_id', session.user.id);
 
         const followingIds = following?.map(f => f.following_id) || [];

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import ImageGrid from '@/components/ImageGrid'
+import UsefulButton from '@/components/UsefulButton'
 
 export default function ReviewPage({ params }) {
     const { data: session } = useSession();
@@ -107,9 +108,12 @@ export default function ReviewPage({ params }) {
                         </p>
                     </div>
 
-                    {/* Emoji Rating */}
-                    <div className="text-4xl">
-                        {review.primary_emoji}
+                    {/* Emoji Rating and Useful Button */}
+                    <div className="flex items-center justify-between">
+                        <div className="text-4xl">
+                            {review.primary_emoji}
+                        </div>
+                        {!isOwnReview && <UsefulButton reviewId={params.id} />}
                     </div>
 
                     {/* Review Text */}
