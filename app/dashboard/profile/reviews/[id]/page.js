@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
+import ImageGrid from '@/components/ImageGrid'
+
 export default function ReviewPage({ params }) {
     const { data: session } = useSession();
     const [review, setReview] = useState(null);
@@ -121,18 +122,7 @@ export default function ReviewPage({ params }) {
                     )}
 
                     {/* Images */}
-                    {review.images && review.images.length > 0 && (
-                        <div className="grid grid-cols-2 gap-4">
-                            {review.images.map((image, index) => (
-                                <Image
-                                    key={index}
-                                    src={image}
-                                    alt={`Review image ${index + 1}`}
-                                    className="rounded-lg object-cover w-full h-48"
-                                />
-                            ))}
-                        </div>
-                    )}
+                    {review.images && <ImageGrid images={review.images} />}
 
                     {/* Date */}
                     <div className="text-sm text-gray-500">

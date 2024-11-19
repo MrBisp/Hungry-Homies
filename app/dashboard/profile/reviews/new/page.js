@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import MapInput from '@/components/MapInput';
 import ReactConfetti from 'react-confetti';
+import ImageUpload from '@/components/ImageUpload';
 
 const locationTypes = ['restaurant', 'bar', 'cafe', 'bakery'];
 const emojis = ['😋', '🤤', '😍', '🤩', '😊', '👍', '👎', '❤️', '🔥', '⭐', '💯', '💸'];
@@ -202,6 +203,22 @@ export default function NewReviewPage() {
                                 ...prev,
                                 reviewText: e.target.value
                             }))}
+                        />
+                    </div>
+
+                    {/* Image Upload */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Images
+                        </label>
+                        <ImageUpload
+                            images={formData.images}
+                            onImagesChange={(newImages) =>
+                                setFormData(prev => ({
+                                    ...prev,
+                                    images: newImages
+                                }))
+                            }
                         />
                     </div>
 
