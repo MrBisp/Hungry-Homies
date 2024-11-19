@@ -80,26 +80,45 @@ const ReviewPopup = React.memo(({ review, status, handleEmojiClick }) => {
         return <div>{review.name}</div>;
     }
     return (
-        <div className="p-0 min-w-[200px] bg-white">
-            <div className="flex items-center space-x-4 mb-2">
+        <div className="p-0 min-w-[280px] bg-white">
+            {/* Header with Profile and Location Info */}
+            <div className="flex gap-3 items-center mb-4">
                 <ProfileListItem user={review.user} size="sm" />
-                <div>
-                    <h3 className="text-lg font-semibold">{review.name}</h3>
-                    <p className="text-gray-600 text-sm">{review.location_type}</p>
+                <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900">{review.name}</h3>
+                    <p className="text-sm text-gray-600">{review.location_name}</p>
                 </div>
+                <span
+                    className="text-2xl emoji-clickable cursor-pointer hover:scale-110 transition-transform"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleEmojiClick(review.primary_emoji);
+                    }}
+                >
+                    {review.primary_emoji}
+                </span>
             </div>
-            <span
-                className="text-xl emoji-clickable cursor-pointer"
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleEmojiClick(review.primary_emoji);
-                }}
+
+            {/* Location Type */}
+            <div className="mb-3">
+                <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                    {review.location_type}
+                </span>
+            </div>
+
+            {/* Review Text */}
+            <p className="text-sm text-gray-800 mb-3 leading-relaxed">
+                {review.review_text}
+            </p>
+
+            {/* Footer Link */}
+            <Link
+                href={`/dashboard/profile/reviews/${review.id}`}
+                className="text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium"
             >
-                {review.primary_emoji}
-            </span>
-            <p className="text-sm text-gray-800 mt-0">{review.review_text}</p>
-            <Link href={`/dashboard/profile/reviews/${review.id}`} className="text-blue-600 hover:text-blue-700 mt-1 inline-block">View Review</Link>
+                View Full Review
+            </Link>
         </div>
     );
 });
@@ -119,10 +138,8 @@ const ReviewMarker = React.memo(({ review, status, handleEmojiClick }) => {
 
     return (
         <Marker position={review.coordinates} icon={icon}>
-            <Popup>
-                <div className="animated-popup">
-                    <ReviewPopup review={review} status={status} handleEmojiClick={handleEmojiClick} />
-                </div>
+            <Popup options={{ className: '' }}>
+                <ReviewPopup review={review} status={status} handleEmojiClick={handleEmojiClick} />
             </Popup>
         </Marker>
     );
