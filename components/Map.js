@@ -146,7 +146,7 @@ const ReviewMarker = React.memo(({ review, status, handleEmojiClick }) => {
 });
 ReviewMarker.displayName = 'ReviewMarker';
 
-const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
+const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef, initialCoordinates }) => {
     const map = useMap();
     const isInitializedRef = useRef(false);
 
@@ -157,6 +157,11 @@ const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
     }, [map, whenCreated]);
 
     useEffect(() => {
+        // Skip geolocation if we have initial coordinates
+        if (initialCoordinates) {
+            return;
+        }
+
         // Only run geolocation once when the map is first mounted
         if (!isInitializedRef.current && "geolocation" in navigator) {
             isInitializedRef.current = true;
@@ -204,7 +209,7 @@ const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
                 );
             }, 100);
         }
-    }, [map, defaultZoom, positionRef]);
+    }, [map, defaultZoom, positionRef, initialCoordinates]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -227,7 +232,14 @@ const MapEvents = ({ whenCreated, onMoveEnd, defaultZoom, positionRef }) => {
     return null;
 };
 
-const Map = memo(({ onMoveEnd = null, showCenterMarker = false, whenCreated = null, defaultZoom = 15, useRandom = false }) => {
+const Map = memo(({
+    onMoveEnd = null,
+    showCenterMarker = false,
+    whenCreated = null,
+    defaultZoom = 15,
+    useRandom = false,
+    initialCoordinates = null
+}) => {
     const positionRef = useRef(getInitialPosition());
     const { status } = useSession();
     const { reviews: friendReviews, isLoading } = useReviews();
@@ -259,7 +271,7 @@ const Map = memo(({ onMoveEnd = null, showCenterMarker = false, whenCreated = nu
                 </div>
             )}
             <MapContainer
-                center={positionRef.current}
+                center={initialCoordinates || positionRef.current}
                 zoom={defaultZoom}
                 style={{ height: "100%", width: "100%" }}
                 whenCreated={whenCreated}
@@ -290,6 +302,7 @@ const Map = memo(({ onMoveEnd = null, showCenterMarker = false, whenCreated = nu
                     useRandom={useRandom}
                     defaultZoom={defaultZoom}
                     positionRef={positionRef}
+                    initialCoordinates={initialCoordinates}
                 />
             </MapContainer>
             {activeEmoji && (
