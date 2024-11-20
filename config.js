@@ -7,7 +7,7 @@ const config = {
   appDescription:
     "The easy way to share bar and restaurant reviews with your friends.",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
-  domainName: "appname.com",
+  domainName: "food-app-gules-nine.vercel.app",
   crisp: {
     // Crisp website ID. IF YOU DON'T USE CRISP: just remove this => Then add a support email in this config file (mailgun.supportEmail) otherwise customer support won't work.
     id: "",

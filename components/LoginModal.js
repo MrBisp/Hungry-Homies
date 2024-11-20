@@ -5,6 +5,7 @@ import Modal from "@/components/Modal";
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
+import config from "@/config";
 const LoginModal = ({ isAutoOpen = false }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -14,7 +15,7 @@ const LoginModal = ({ isAutoOpen = false }) => {
         <Modal
             isOpen={isAutoOpen}
             setIsOpen={() => { }} // Keep modal open since we want users to sign up/login
-            title="Welcome to [App Name]!"
+            title={"Welcome to " + config.appName + "!"}
         >
             <div className="space-y-6 py-4">
                 {inviteCode && (

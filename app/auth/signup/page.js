@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from "react-hot-toast";
+import config from "@/config";
 
 function SignupContent() {
     const router = useRouter();
@@ -94,7 +95,7 @@ function SignupContent() {
                 throw new Error(result.error);
             }
 
-            toast.success("Welcome to [App Name]!");
+            toast.success("Welcome to " + config.appName + "!");
             router.push('/onboarding');
         } catch (error) {
             toast.error(error.message);
@@ -111,7 +112,7 @@ function SignupContent() {
                     {inviter ? (
                         <>
                             <h2 className="text-3xl font-bold text-gray-900">
-                                Join {inviter.name} on [App Name]
+                                Join {inviter.name} on {config.appName}
                             </h2>
                             <p className="mt-2 text-sm text-gray-600">
                                 Create your account to connect

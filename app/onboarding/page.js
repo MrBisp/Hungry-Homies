@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import config from "@/config";
 
 export default function OnboardingPage() {
     const router = useRouter();
@@ -106,7 +107,7 @@ export default function OnboardingPage() {
                 {step === 1 && (
                     <div className="space-y-8">
                         <div className="text-center">
-                            <h1 className="text-3xl font-bold">Welcome to [App Name]! 👋</h1>
+                            <h1 className="text-3xl font-bold">Welcome to {config.appName}! 👋</h1>
                             <p className="mt-2 text-gray-600">Let us show you around</p>
                         </div>
 
@@ -195,8 +196,8 @@ export default function OnboardingPage() {
                                                 onClick={() => handleFollow(user.id)}
                                                 disabled={user.hasPendingRequest}
                                                 className={`px-4 py-2 rounded-lg text-sm ${user.hasPendingRequest
-                                                        ? 'bg-gray-100 text-gray-500'
-                                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                                                    ? 'bg-gray-100 text-gray-500'
+                                                    : 'bg-blue-600 text-white hover:bg-blue-700'
                                                     }`}
                                             >
                                                 {user.hasPendingRequest ? 'Request Sent' : 'Follow'}
