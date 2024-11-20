@@ -21,7 +21,7 @@ export async function POST(request) {
         const buffer = Buffer.from(await file.arrayBuffer());
         const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
 
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
             .from('review-images')
             .upload(filename, buffer, {
                 contentType: file.type,

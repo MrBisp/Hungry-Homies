@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/libs/next-auth";
 import config from "@/config";
 import MapNavBar from "@/components/MapNavBar";
-import Head from 'next/head';
 
 // This is a server-side component to ensure the user is logged in.
 // If not, it will redirect to the login page.
@@ -19,9 +18,6 @@ export default async function LayoutPrivate({ children }) {
 
   return (
     <>
-      <Head>
-        <link rel="manifest" href="/manifest.json" />
-      </Head>
       {children}
       <MapNavBar />
     </>

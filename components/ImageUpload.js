@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import Image from 'next/image';
 export default function ImageUpload({ images, onImagesChange }) {
     const [isDragging, setIsDragging] = useState(false);
 
@@ -132,10 +132,12 @@ export default function ImageUpload({ images, onImagesChange }) {
                 <div className="grid grid-cols-2 gap-4">
                     {images.map((image, index) => (
                         <div key={index} className="relative group">
-                            <img
+                            <Image
                                 src={image}
                                 alt={`Uploaded image ${index + 1}`}
                                 className="rounded-lg object-cover w-full h-48"
+                                width={800}
+                                height={800}
                             />
                             <button
                                 onClick={() => removeImage(index)}
