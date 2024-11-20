@@ -13,7 +13,22 @@ export async function POST(req) {
 
         const { recipientId } = await req.json();
 
-        // Check if any request exists (regardless of status)
+        // First check if there's an active follow relationship
+        const { data: followExists } = await supabase
+            .from('follows')
+            .select()
+            .eq('follower_id', session.user.id)
+            .eq('following_id', recipientId)
+            .single();
+
+        if (followExists) {
+            return NextResponse.json(
+                { error: 'Already following this user' },
+                { status: 400 }
+            );
+        }
+
+        // Check for any existing request
         const { data: existingRequest } = await supabase
             .from('follow_requests')
             .select()
@@ -22,8 +37,8 @@ export async function POST(req) {
             .single();
 
         if (existingRequest) {
-            // If request exists but was rejected, update it to pending
-            if (existingRequest.status === 'rejected') {
+            // If request exists but isn't pending, update it
+            if (existingRequest.status !== 'pending') {
                 const { error: updateError } = await supabase
                     .from('follow_requests')
                     .update({
@@ -34,12 +49,21 @@ export async function POST(req) {
                     .eq('recipient_id', recipientId);
 
                 if (updateError) throw updateError;
+
+                // Create notification for updated request
+                await createNotification({
+                    recipientId,
+                    senderId: session.user.id,
+                    type: 'FOLLOW_REQUEST',
+                    content: `${session.user.name} wants to follow you`,
+                    link: '/dashboard/profile/friends'
+                });
+
                 return NextResponse.json({ success: true });
             }
 
-            // If request is pending or accepted, return appropriate message
             return NextResponse.json(
-                { error: `Request already ${existingRequest.status}` },
+                { error: 'Request already pending' },
                 { status: 400 }
             );
         }
@@ -57,6 +81,7 @@ export async function POST(req) {
 
         if (createError) throw createError;
 
+        // Create notification for new request
         await createNotification({
             recipientId,
             senderId: session.user.id,
