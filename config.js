@@ -2,7 +2,7 @@ import themes from "daisyui/src/theming/themes";
 
 const config = {
   // REQUIRED
-  appName: "App name (coming soon)",
+  appName: "Hungry Homies",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
   appDescription:
     "The easy way to share bar and restaurant reviews with your friends.",
