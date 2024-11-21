@@ -1,6 +1,4 @@
 import Image from "next/image";
-import marcImg from "@/app/blog/_assets/images/authors/marc.png";
-import introducingSupabaseImg from "@/public/blog/introducing-supabase/header.png";
 
 // ==================================================================================================================================================================
 // BLOG CATEGORIES 🏷️
@@ -54,7 +52,7 @@ const socialIcons = {
         y="0px"
         viewBox="0 0 1668.56 1221.19"
         className="w-9 h-9"
-        // Using a dark theme? ->  className="w-9 h-9 fill-white"
+      // Using a dark theme? ->  className="w-9 h-9 fill-white"
       >
         <g id="layer1" transform="translate(52.390088,-25.058597)">
           <path
@@ -111,7 +109,6 @@ export const authors = [
     description:
       "Marc is a developer and an entrepreneur. He's built 20 startups in the last 3 years. 6 were profitable and 3 were acquired. He's currently building ByeDispute, the #1 Stripe Chargebacks Protection tool.",
     // The avatar of the author to display in the author's bio and avatar badge. It's better to use a local image, but you can also use an external image (https://...)
-    avatar: marcImg,
     // A list of social links to display in the author's bio.
     socials: [
       {
@@ -170,7 +167,6 @@ export const articles = [
     publishedAt: "2023-11-20",
     image: {
       // The image to display in <CardArticle /> components.
-      src: introducingSupabaseImg,
       // The relative URL of the same image to use in the Open Graph meta tags & the Schema Markup JSON-LD.
       urlRelative: "/blog/introducing-supabase/header.jpg",
       alt: "Supabase and ShipFast logo combined",
@@ -179,7 +175,6 @@ export const articles = [
     content: (
       <>
         <Image
-          src={introducingSupabaseImg}
           alt="Supabase and ShipFast logo combined"
           width={700}
           height={500}
