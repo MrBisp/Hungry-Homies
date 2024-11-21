@@ -13,9 +13,12 @@ const MapNavBar = dynamic(() => import('@/components/MapNavBar'), {
 
 export const metadata = {
 	...getSEOTags(),
-	themeColor: config.colors.main,
 	manifest: "/manifest.json",
 	appleTouchIcon: "/person-no-head.png",
+};
+
+export const viewport = {
+	themeColor: config.colors.main,
 };
 
 export default function RootLayout({ children }) {
