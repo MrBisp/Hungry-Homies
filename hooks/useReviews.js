@@ -5,42 +5,38 @@ export function useReviews() {
     const { data: session } = useSession();
     const [reviews, setReviews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchReviews = async () => {
             try {
+                setIsLoading(true);
                 const response = await fetch('/api/reviews/feed');
-                if (!response.ok) throw new Error('Failed to fetch reviews');
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to fetch reviews');
+                }
+
                 const data = await response.json();
-                //console.log("ReviewsData:", data);
 
-                //Before setting the reviews, let's convert the coordinates to an array coordinates
-                const coordinatesString = data.map(review => review.coordinates);
-                //console.log("CoordinatesString:", coordinatesString);
+                // Process coordinates
+                const reviewsWithCorrectCoordinates = data.map(review => {
+                    if (!review.coordinates) return review;
 
-                const coordinatesWithoutParentheses = coordinatesString.map(coord => coord.replace('(', '').replace(')', ''));
-                //console.log("CoordinatesWithoutParentheses:", coordinatesWithoutParentheses);
-
-                const coordinatesArray = coordinatesWithoutParentheses.map(coord => coord.split(',').map(Number));
-                //console.log("CoordinatesArray:", coordinatesArray);
-
-                //Now let's add the coordinates to the reviews
-                const reviewsWithCoordinates = data.map((review, index) => ({
-                    ...review,
-                    coordinates: coordinatesArray[index]
-                }));
-                //console.log("ReviewsWithCoordinates:", reviewsWithCoordinates);
-
-                //Turns out that they should be in the format [latitude, longitude]
-                const reviewsWithCorrectCoordinates = reviewsWithCoordinates.map(review => ({
-                    ...review,
-                    coordinates: [review.coordinates[1], review.coordinates[0]]
-                }));
+                    const coordStr = review.coordinates.replace('(', '').replace(')', '');
+                    const [lng, lat] = coordStr.split(',').map(Number);
+                    return {
+                        ...review,
+                        coordinates: [lat, lng]
+                    };
+                });
 
                 setReviews(reviewsWithCorrectCoordinates);
-            } catch (error) {
-                console.error('Error fetching reviews:', error);
-                setReviews([]);
+                setError(null);
+            } catch (err) {
+                console.error('Error fetching reviews:', err);
+                setError(err.message);
             } finally {
                 setIsLoading(false);
             }
@@ -49,5 +45,5 @@ export function useReviews() {
         fetchReviews();
     }, []);
 
-    return { reviews, isLoading };
+    return { reviews, isLoading, error };
 }
