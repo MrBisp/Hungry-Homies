@@ -87,17 +87,15 @@ export default function NewReviewPage() {
         }
     };
 
-    const handleLocationSelect = useCallback((coords) => {
-        setFormData(prev => {
-            const newState = {
-                ...prev,
-                coordinates: {
-                    lat: coords.lat,
-                    lng: coords.lng
-                }
-            };
-            return newState;
-        });
+    const handleLocationSelect = useCallback((coords, placeName = '') => {
+        setFormData(prev => ({
+            ...prev,
+            locationName: placeName || prev.locationName,
+            coordinates: {
+                lat: coords.lat,
+                lng: coords.lng
+            }
+        }));
     }, []);
 
     return (

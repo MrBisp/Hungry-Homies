@@ -111,12 +111,30 @@ export const authOptions = {
       }
       return session;
     },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.sub;
+      }
+      return session;
+    }
   },
   pages: {
-    error: '/',
-    signIn: '/',
+    signIn: '/auth/signin',
+    signOut: '/auth/signout',
+    error: '/auth/error',
+    newUser: '/onboarding'
   },
   session: {
     strategy: "jwt",
   },
+  events: {
+    async signIn({ user, account, profile, isNewUser }) {
+      if (!isNewUser) {
+        // Existing users go to home
+        return '/home';
+      }
+      // New users still go to onboarding
+      return '/onboarding';
+    }
+  }
 };

@@ -216,3 +216,13 @@ progress::-webkit-progress-value {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* Add these styles to your global CSS */
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 1000 !important; /* Ensure controls are below search but above map */
+}
+
+.leaflet-control-zoom {
+  margin-top: 60px !important; /* Push zoom controls below search box */
+}

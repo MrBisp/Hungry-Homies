@@ -46,18 +46,10 @@ export default function OnboardingPage() {
 
     const handleComplete = async () => {
         try {
-            // Simply mark onboarding as complete without sending any data
-            const response = await fetch('/api/user/complete-onboarding', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ completed: true }),
-            });
-
-            if (response.ok) {
-                router.push('/');
-            }
+            // Redirect to home page instead of dashboard
+            router.push('/home');
         } catch (error) {
-            console.error('Error completing onboarding:', error);
+            console.error('Error saving preferences:', error);
         }
     };
 

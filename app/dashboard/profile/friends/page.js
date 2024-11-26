@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import ProfileListItem from '@/components/ProfileListItem';
 import FollowButton from '@/components/FollowButton';
 import debounce from 'lodash/debounce';
+import Link from 'next/link';
 
 export default function FriendsPage() {
     const { data: session } = useSession();
@@ -251,10 +252,16 @@ export default function FriendsPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Header */}
+            {/* Header with Invite Button */}
             <div className="border-b">
-                <div className="px-4 py-4">
+                <div className="px-4 py-4 flex items-center justify-between">
                     <h1 className="text-xl font-semibold">Friends</h1>
+                    <button
+                        onClick={generateInviteLink}
+                        className="px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                    >
+                        Invite Friend
+                    </button>
                 </div>
             </div>
 
@@ -315,9 +322,19 @@ export default function FriendsPage() {
 
             {/* Invite Modal */}
             {showInviteModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4">Invite a Friend</h3>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold">Invite a Friend</h3>
+                            <button 
+                                onClick={() => setShowInviteModal(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
                         <p className="text-sm text-gray-600 mb-4">Share this link with your friend to invite them:</p>
                         <div className="flex items-center space-x-2 mb-4">
                             <input
