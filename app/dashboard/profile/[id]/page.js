@@ -78,41 +78,7 @@ export default function UserProfilePage({ params }) {
         }
     };
 
-    const renderFollowButton = () => {
-        if (session?.user?.id === parseInt(params.id)) return null;
-
-        if (followStatus.isFollowing) {
-            return (
-                <button
-                    onClick={handleFollowAction}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
-                >
-                    Following
-                </button>
-            );
-        }
-
-        if (followStatus.hasPendingRequest) {
-            return (
-                <button
-                    disabled
-                    className="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm cursor-not-allowed"
-                >
-                    Request Pending
-                </button>
-            );
-        }
-
-        return (
-            <button
-                onClick={handleFollowAction}
-                className="px-4 py-2 bg-black text-white rounded-lg text-sm hover:bg-gray-800"
-            >
-                Follow
-            </button>
-        );
-    };
-
+ 
     if (isLoading || !user) {
         return (
             <div className="min-h-screen bg-white">

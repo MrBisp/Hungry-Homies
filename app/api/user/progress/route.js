@@ -3,6 +3,8 @@ import { authOptions } from "@/libs/next-auth";
 import { supabase } from "@/libs/supabase";
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);

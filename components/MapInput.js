@@ -8,7 +8,49 @@ import L from 'leaflet';
 import ReactDOMServer from 'react-dom/server';
 import ProfileImage from '@/components/ProfileImage';
 
-const Map = dynamic(() => import('@/components/Map'), {
+const MapInput = dynamic(() => Promise.resolve(({ onLocationSelect, userImage = '/default-avatar.png', emoji = '😋' }) => {
+    const [marker, setMarker] = useState(null);
+    const [customIcon, setCustomIcon] = useState(null);
+
+    useEffect(() => {
+        setCustomIcon(createCustomIcon(emoji, { image: userImage }));
+    }, [emoji, userImage]);
+
+    const handleMapClick = useCallback((e) => {
+        const coords = { lat: e.latlng.lat, lng: e.latlng.lng };
+        setMarker(coords);
+        onLocationSelect(coords);
+    }, [onLocationSelect]);
+
+    return (
+        <div className="h-[400px] relative">
+            <MapContainer
+                center={[55.6761, 12.5683]}
+                zoom={13}
+                style={{ height: "100%", width: "100%" }}
+            >
+                <SearchControl onLocationSelect={(coords, name) => {
+                    setMarker(coords);
+                    onLocationSelect(coords, name);
+                }} />
+                
+                <TileLayer
+                    attribution='&copy; OpenStreetMap contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                
+                {marker && customIcon && (
+                    <Marker 
+                        position={[marker.lat, marker.lng]} 
+                        icon={customIcon}
+                    />
+                )}
+
+                <MapEvents onClick={handleMapClick} />
+            </MapContainer>
+        </div>
+    );
+}), {
     ssr: false,
     loading: () => <div>Loading map...</div>
 });
@@ -34,7 +76,7 @@ function SearchControl({ onLocationSelect }) {
         };
     }, []);
 
-    const handleSearch = async (searchTerm = searchValue) => {
+    const handleSearch = useCallback(async (searchTerm = searchValue) => {
         if (!searchTerm.trim()) {
             setSuggestions([]);
             setShowSuggestions(false);
@@ -76,7 +118,7 @@ function SearchControl({ onLocationSelect }) {
         } finally {
             setIsSearching(false);
         }
-    };
+    }, [map]);
 
     const handleSuggestionClick = (suggestion) => {
         setSearchValue(suggestion.name.split(',')[0]);
@@ -96,7 +138,7 @@ function SearchControl({ onLocationSelect }) {
         }, 300);
 
         return () => clearTimeout(timer);
-    }, [searchValue]);
+    }, [searchValue, handleSearch]);
 
     return (
         <div 
@@ -186,7 +228,13 @@ function SearchControl({ onLocationSelect }) {
 }
 
 const createCustomIcon = (emoji = '📍', user = null) => {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined') {
+        return {
+            iconSize: [40, 40],
+            className: 'custom-marker-wrapper'
+        };
+    }
+
     try {
         const markerHtml = `
             <div class="marker-container">
@@ -206,46 +254,6 @@ const createCustomIcon = (emoji = '📍', user = null) => {
         return null;
     }
 };
-
-const MapInput = memo(({ onLocationSelect, userImage = '/default-avatar.png', emoji = '😋' }) => {
-    const [marker, setMarker] = useState(null);
-    const customIcon = useMemo(() => createCustomIcon(emoji, { image: userImage }), [emoji, userImage]);
-
-    const handleMapClick = useCallback((e) => {
-        const coords = { lat: e.latlng.lat, lng: e.latlng.lng };
-        setMarker(coords);
-        onLocationSelect(coords);
-    }, [onLocationSelect]);
-
-    return (
-        <div className="h-[400px] relative">
-            <MapContainer
-                center={[55.6761, 12.5683]}
-                zoom={13}
-                style={{ height: "100%", width: "100%" }}
-            >
-                <SearchControl onLocationSelect={(coords, name) => {
-                    setMarker(coords);
-                    onLocationSelect(coords, name);
-                }} />
-                
-                <TileLayer
-                    attribution='&copy; OpenStreetMap contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                
-                {marker && (
-                    <Marker 
-                        position={[marker.lat, marker.lng]} 
-                        icon={customIcon}
-                    />
-                )}
-
-                <MapEvents onClick={handleMapClick} />
-            </MapContainer>
-        </div>
-    );
-});
 
 // Add MapEvents component to handle map clicks
 const MapEvents = ({ onClick }) => {

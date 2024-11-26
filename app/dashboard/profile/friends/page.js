@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import ProfileListItem from '@/components/ProfileListItem';
 import FollowButton from '@/components/FollowButton';
 import debounce from 'lodash/debounce';
-import Link from 'next/link';
 
 export default function FriendsPage() {
     const { data: session } = useSession();
@@ -17,7 +16,6 @@ export default function FriendsPage() {
     const [followers, setFollowers] = useState([]);
     const [following, setFollowing] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [inviteUrl, setInviteUrl] = useState('');
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [buttonText, setButtonText] = useState('Copy');
@@ -46,10 +44,8 @@ export default function FriendsPage() {
                 setFollowers(followersData.followers || []);
                 setFollowing(followingData.following || []);
                 setSuggestions(suggestionsData.suggestions || []);
-                setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                setIsLoading(false);
             }
         };
 

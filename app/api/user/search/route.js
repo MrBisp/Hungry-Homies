@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { supabase } from "@/libs/supabase";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/libs/next-auth";

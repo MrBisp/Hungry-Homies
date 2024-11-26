@@ -1,15 +1,25 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import MapInput from '@/components/MapInput';
-import ReactConfetti from 'react-confetti';
+import dynamic from 'next/dynamic';
 import ImageUpload from '@/components/ImageUpload';
 import PreferencesSelect from '@/components/PreferencesSelect';
 
 const locationTypes = ['restaurant', 'bar', 'cafe', 'bakery'];
 const emojis = ['😋', '🤤', '😍', '🤩', '😊', '👍', '👎', '❤️', '🔥', '⭐', '💯', '💸'];
+
+const ReactConfetti = dynamic(() => import('react-confetti'), {
+  ssr: false
+});
+
+const MapInput = dynamic(() => import('@/components/MapInput'), {
+    ssr: false,
+    loading: () => <div>Loading map...</div>
+});
+
+export const dynamicConfig = 'force-dynamic';
 
 export default function NewReviewPage() {
     const router = useRouter();
@@ -27,26 +37,8 @@ export default function NewReviewPage() {
 
     const [message, setMessage] = useState(null);
     const [showConfetti, setShowConfetti] = useState(false);
-    const [windowSize, setWindowSize] = useState({
-        width: typeof window !== 'undefined' ? window.innerWidth : 0,
-        height: typeof window !== 'undefined' ? window.innerHeight : 0
-    });
 
-
-    // Add this useEffect for window resize handling
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight
-            });
-        };
-
-        if (typeof window !== 'undefined') {
-            window.addEventListener('resize', handleResize);
-            return () => window.removeEventListener('resize', handleResize);
-        }
-    }, []);
+    const isMounted = useRef(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -102,10 +94,16 @@ export default function NewReviewPage() {
         <div className="min-h-screen bg-gray-50 pb-16 relative">
             {showConfetti && (
                 <ReactConfetti
-                    width={windowSize.width}
-                    height={windowSize.height}
+                    width="100vw"
+                    height="100vh"
                     recycle={false}
                     numberOfPieces={200}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        zIndex: 100
+                    }}
                 />
             )}
             <div className="bg-white rounded-lg shadow px-6 py-8">
