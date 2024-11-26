@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import ProfileImage from './ProfileImage';
 import Link from 'next/link';
 

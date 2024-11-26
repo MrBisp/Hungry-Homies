@@ -18,8 +18,10 @@ export default async function LayoutPrivate({ children }) {
 
   return (
     <>
-      {children}
-      <MapNavBar />
+      <div className="flex flex-col min-h-screen pb-12">
+        {children}
+        <MapNavBar />
+      </div>
     </>
   );
 }

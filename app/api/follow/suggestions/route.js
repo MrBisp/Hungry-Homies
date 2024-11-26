@@ -22,11 +22,20 @@ export async function GET() {
         // Add your own ID to exclude from suggestions
         followingIds.push(session.user.id);
 
-        // Get 10 random users that you're not following
+        // Get pending follow requests
+        const { data: pendingRequests } = await supabase
+            .from('follow_requests')
+            .select('recipient_id')
+            .eq('requester_id', session.user.id)
+            .eq('status', 'pending');
+
+        const pendingRequestIds = pendingRequests?.map(r => r.recipient_id) || [];
+
+        // Get 10 random users that you're not following and haven't sent requests to
         const { data: suggestions, error } = await supabase
             .from('users')
             .select('id, name, image')
-            .not('id', 'in', `(${followingIds.join(',')})`)
+            .not('id', 'in', `(${[...followingIds, ...pendingRequestIds].join(',')})`)
             .eq('use_for_recommendations', true)
             .limit(10);
 

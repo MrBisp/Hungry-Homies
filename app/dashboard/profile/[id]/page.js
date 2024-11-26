@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import ProfileImage from '@/components/ProfileImage';
+import FollowButton from '@/components/FollowButton';
 
 export default function UserProfilePage({ params }) {
     const router = useRouter();
@@ -150,7 +151,7 @@ export default function UserProfilePage({ params }) {
                             <h2 className="text-xl font-medium">{user.name}</h2>
                         </div>
                     </div>
-                    {renderFollowButton()}
+                    <FollowButton userId={user.id} />
                 </div>
             </div>
 
