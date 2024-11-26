@@ -43,10 +43,6 @@ export default function HomePage() {
         }
     }, [session]);
 
-    useEffect(() => {
-        setProgress(prev => prev + 10);
-    }, []);
-
     const tasks = [
         {
             id: 'firstReview',
