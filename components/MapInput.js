@@ -87,27 +87,38 @@ function SearchControl({ onLocationSelect }) {
         try {
             const bounds = map.getBounds();
             const viewbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
-
-            const response = await fetch(
-                `https://nominatim.openstreetmap.org/search?` + 
+            
+            const url = `https://nominatim.openstreetmap.org/search?` + 
                 `format=json&` +
                 `q=${encodeURIComponent(searchTerm)}&` +
                 `viewbox=${viewbox}&` +
                 `bounded=0&` +
-                `limit=5`
-            );
+                `limit=5`;
+            console.log('Search URL:', url);
+
+            const response = await fetch(url, {
+                headers: {
+                    'User-Agent': 'YourAppName/1.0',
+                    'Accept-Language': 'en'
+                }
+            });
+            
             const data = await response.json();
+            console.log('Search response:', data);
             
             if (data && data.length > 0) {
-                setSuggestions(data.map(item => ({
+                const mappedSuggestions = data.map(item => ({
                     name: item.display_name,
                     coordinates: {
                         lat: parseFloat(item.lat),
                         lng: parseFloat(item.lon)
                     }
-                })));
+                }));
+                console.log('Mapped suggestions:', mappedSuggestions);
+                setSuggestions(mappedSuggestions);
                 setShowSuggestions(true);
             } else {
+                console.log('No suggestions found');
                 setSuggestions([]);
                 setShowSuggestions(false);
             }
@@ -118,7 +129,7 @@ function SearchControl({ onLocationSelect }) {
         } finally {
             setIsSearching(false);
         }
-    }, [map]);
+    }, [map, searchValue]);
 
     const handleSuggestionClick = (suggestion) => {
         setSearchValue(suggestion.name.split(',')[0]);
@@ -142,7 +153,7 @@ function SearchControl({ onLocationSelect }) {
 
     return (
         <div 
-            className="absolute top-2 left-2 right-2 md:left-12 md:right-12 z-[1001]"
+            className="absolute top-2 left-2 right-2 md:left-12 md:right-12 z-[1002]"
             ref={searchContainerRef}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
