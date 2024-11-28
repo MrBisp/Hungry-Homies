@@ -7,14 +7,21 @@ export async function GET(request, { params }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session) {
-            return new Response('Unauthorized', { status: 401 });
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { id } = params;
-        const requesterId = session.user.id;
+        const id = parseInt(params.id);
+        
+        // Add debug logging
+        console.log('Session user ID:', session.user.id, typeof session.user.id);
+        console.log('Requested ID:', id, typeof id);
 
-        // Allow users to view their own reviews
-        if (requesterId === parseInt(id)) {
+        // Ensure both IDs are numbers and compare them
+        const sessionUserId = Number(session.user.id);
+        const requestedId = Number(id);
+
+        // Allow users to view their own reviews without following check
+        if (sessionUserId === requestedId) {
             const { data: reviews, error } = await supabase
                 .from('reviews')
                 .select(`
@@ -24,7 +31,7 @@ export async function GET(request, { params }) {
                         image
                     )
                 `)
-                .eq('user_id', id)
+                .eq('user_id', requestedId)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -35,19 +42,15 @@ export async function GET(request, { params }) {
             });
         }
 
-        // Check if the requester follows the target user
-        const { data: followStatus, error: followError } = await supabase
+        // Check if the user is following the requested profile
+        const { data: followStatus } = await supabase
             .from('follows')
             .select()
-            .eq('follower_id', requesterId)
-            .eq('following_id', id)
+            .eq('follower_id', sessionUserId)
+            .eq('following_id', requestedId)
             .single();
 
-        if (followError && followError.code !== 'PGRST116') { // PGRST116 is "not found" error
-            throw followError;
-        }
-
-        // If not following, return unauthorized
+        // If not following and not own profile, return unauthorized
         if (!followStatus) {
             return NextResponse.json(
                 { error: "You must follow this user to view their reviews" },
@@ -55,7 +58,7 @@ export async function GET(request, { params }) {
             );
         }
 
-        // If following, return the reviews
+        // Get the reviews
         const { data: reviews, error } = await supabase
             .from('reviews')
             .select(`
@@ -65,7 +68,7 @@ export async function GET(request, { params }) {
                     image
                 )
             `)
-            .eq('user_id', id)
+            .eq('user_id', requestedId)
             .order('created_at', { ascending: false });
 
         if (error) throw error;

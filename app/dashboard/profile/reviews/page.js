@@ -14,6 +14,8 @@ export default function ReviewsPage() {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
+                if (!session?.user?.id) return;
+                
                 const response = await fetch(`/api/reviews/user/${session.user.id}`);
                 const data = await response.json();
                 setReviews(data.reviews);
@@ -24,9 +26,7 @@ export default function ReviewsPage() {
             }
         };
 
-        if (session?.user?.id) {
-            fetchReviews();
-        }
+        fetchReviews();
     }, [session?.user?.id]);
 
     const handleDeleteClick = (review) => {
@@ -80,6 +80,11 @@ export default function ReviewsPage() {
                 {isLoading ? (
                     <div className="flex justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    </div>
+                ) : !reviews ? (
+                    <div className="text-center py-12">
+                        <div className="text-4xl mb-4">⚠️</div>
+                        <p className="text-gray-500">Unable to load reviews. Please try again later.</p>
                     </div>
                 ) : reviews.length === 0 ? (
                     <div className="text-center py-12">
