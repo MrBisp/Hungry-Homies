@@ -110,7 +110,7 @@ export default function HomePage() {
                     </div>
                 ) : (
                     <p className="text-gray-600 mb-8">
-                        Let's help you get started
+                        Let&apos;s help you get started
                     </p>
                 )}
 
