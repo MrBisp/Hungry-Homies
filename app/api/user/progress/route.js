@@ -48,15 +48,23 @@ export async function GET() {
             `)
             .eq('follower_id', session.user.id);
 
-        // Get review counts for each friend
+        // Get current user's data from session
+        const currentUser = {
+            id: session.user.id,
+            name: session.user.name || '',
+            image: session.user.image || ''
+        };
+
+        // Get review counts for friends and current user
         const friendIds = friendsLeaderboard?.map(f => f.following.id) || [];
+        const allUserIds = [...friendIds, currentUser.id];
         
         let formattedLeaderboard = [];
-        if (friendIds.length > 0) {
+        if (allUserIds.length > 0) {
             const { data: reviewCounts } = await supabase
                 .from('reviews')
                 .select('user_id')
-                .in('user_id', friendIds);
+                .in('user_id', allUserIds);
 
             // Count reviews for each user
             const reviewCountMap = {};
@@ -64,13 +72,29 @@ export async function GET() {
                 reviewCountMap[review.user_id] = (reviewCountMap[review.user_id] || 0) + 1;
             });
 
-            // Format leaderboard with review counts
-            formattedLeaderboard = friendsLeaderboard.map(f => ({
+            // Format friends data
+            const friendsData = friendsLeaderboard.map(f => ({
                 id: f.following.id,
                 name: f.following.name,
                 image: f.following.image,
                 reviewCount: reviewCountMap[f.following.id] || 0
-            })).sort((a, b) => b.reviewCount - a.reviewCount);
+            }));
+
+            // Add current user data
+            const currentUserData = {
+                ...currentUser,
+                reviewCount: reviewCountMap[currentUser.id] || 0
+            };
+
+            // Combine and sort all users, ALWAYS including current user
+            formattedLeaderboard = [...friendsData, currentUserData]
+                .sort((a, b) => b.reviewCount - a.reviewCount);
+        } else {
+            // If no friends, just add current user
+            formattedLeaderboard = [{
+                ...currentUser,
+                reviewCount: 0
+            }];
         }
 
         // Calculate total resistance power (all reviews from user and friends)

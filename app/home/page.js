@@ -99,18 +99,20 @@ export default function HomePage() {
             <div className="px-4 py-6">
                 <h1 className="text-2xl font-bold mb-2">
                     {isLoading ? (
-                        <div className="h-8 w-64 bg-gray-200 rounded animate-pulse" />
+                        <span className="h-8 w-64 bg-gray-200 rounded animate-pulse block" />
                     ) : (
                         `Welcome back, ${session?.user?.name}! 👋`
                     )}
                 </h1>
-                <p className="text-gray-600 mb-8">
-                    {isLoading ? (
-                        <div className="h-5 w-48 bg-gray-200 rounded animate-pulse" />
-                    ) : (
-                        "Let's help you get started"
-                    )}
-                </p>
+                {isLoading ? (
+                    <div className="text-gray-600 mb-8">
+                        <span className="h-5 w-48 bg-gray-200 rounded animate-pulse block" />
+                    </div>
+                ) : (
+                    <p className="text-gray-600 mb-8">
+                        Let's help you get started
+                    </p>
+                )}
 
                 {!isLoading && progress.resistance && (
                     <div className="mb-8 p-6 bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl">
@@ -213,7 +215,11 @@ export default function HomePage() {
                             {progress.leaderboard.map((friend, index) => (
                                 <div 
                                     key={friend.id}
-                                    className="flex items-center"
+                                    className={`flex items-center p-2 rounded-lg ${
+                                        friend.id === session.user.id 
+                                            ? 'bg-blue-50 border border-blue-100' 
+                                            : ''
+                                    }`}
                                 >
                                     <div className="w-8 text-lg font-medium text-gray-500">
                                         #{index + 1}
@@ -222,11 +228,15 @@ export default function HomePage() {
                                         <ProfileListItem 
                                             user={{
                                                 ...friend,
-                                                // Add any extra info needed by ProfileListItem
                                             }}
                                             extraInfo={`${friend.reviewCount} reviews`}
                                         />
                                     </div>
+                                    {friend.id === session.user.id && (
+                                        <div className="text-sm text-blue-600 font-medium px-2">
+                                            You
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
